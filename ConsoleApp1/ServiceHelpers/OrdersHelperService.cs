@@ -1,5 +1,6 @@
 ﻿using ConsoleApp1.Models;
 using Newtonsoft.Json;
+using ShopifyOrdersEngine.LogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,10 +40,13 @@ namespace ConsoleApp1.ServiceHelpers
                             if (ordermodel.First().VerserOrderID != null)
                             {
                                 response = ordermodel.First().VerserOrderID + " Order is been created and ready to Process. Go To Orders for Processing";
+                                LoggerManager.Writelog("info", $"{response}");
                             }
                             else
                             {
                                 response = "Error Occured Please Verify Your Order Request Information.";
+
+                                LoggerManager.Writelog("error", $"Error Occured Please Verify Your Order Request Information. : {NewManualOrder}");
                             }
                         }
                     }

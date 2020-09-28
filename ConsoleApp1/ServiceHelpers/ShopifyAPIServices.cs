@@ -1,6 +1,7 @@
 ﻿using ConsoleApp1.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ShopifyOrdersEngine.LogService;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -26,8 +27,6 @@ namespace ConsoleApp1.ServiceHelpers
             //}
             List<orders> ReturnResult = new List<orders>();
 
-
-
             WebRequest request = WebRequest.Create("https://verser-online-store.myshopify.com/admin/api/2020-07/orders.json?status=any");
             // Set the credentials.
             request.Credentials = new NetworkCredential("f2f0ba5cff55bdcddba3a63e33602b74", "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");
@@ -37,10 +36,12 @@ namespace ConsoleApp1.ServiceHelpers
             {
                 // This is where the HTTP GET actually occurs.
                 response = (HttpWebResponse)request.GetResponse();
+                LoggerManager.Writelog("info", $"response:{response}");
             }
             catch (Exception ea)
             {
-                Console.WriteLine(ea.ToString());
+                LoggerManager.Writelog("error", $"Error Occured While Creating Order: {ea.Message}");               
+                
             }
             // Display the status. You want to see "OK" here.
             Console.WriteLine(response.StatusDescription);
@@ -84,13 +85,13 @@ namespace ConsoleApp1.ServiceHelpers
             foreach (OrderViewModel theModel in modelCollection)
             {
               var ReturnResponse =  OrdersHelperService.CreateOrder(theModel);
-                Console.WriteLine(ReturnResponse);
+                LoggerManager.Writelog("info", $"response:{ReturnResponse}");               
             }
 
             // jsonOrders
             //var obj = 
             // Display the content.
-            Console.WriteLine(responseFromServer);
+           // Console.WriteLine(responseFromServer);
             // Cleanup the streams and the response.
             reader.Close();
             dataStream.Close();

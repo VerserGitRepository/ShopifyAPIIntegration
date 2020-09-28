@@ -1,4 +1,5 @@
 ﻿using ConsoleApp1.ServiceHelpers;
+using ShopifyOrdersEngine.LogService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
+            LoggerManager.Writelog("info", "Orders Pull Request Initiated");
             ShopifyAPIServices.FetchAndPushShopifyOrders();
         }
     }
