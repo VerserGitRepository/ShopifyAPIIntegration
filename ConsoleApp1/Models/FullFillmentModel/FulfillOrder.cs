@@ -28,7 +28,7 @@ namespace ShopifyOrdersEngine.Models.FullFillmentModel
     {
         public void FulfillOrderLineItem()
         {
-            //POST /admin/api/2020-07/orders/450789469/fulfillments.json  //URL
+            //POST /admin/api/2020-07/orders/450789469/fulfillments.json  //URL //https://shopify.dev/docs/admin-api/rest/reference/shipping-and-fulfillment/fulfillment#create-2020-07
             string ConsignmentID = "C7SZ50005296";
             var root = new Rootobject();
             root.fulfillment = new Fulfillment();
