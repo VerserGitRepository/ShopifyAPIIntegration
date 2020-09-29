@@ -20,4 +20,3 @@ C:\VerserSourceCodeGitRepo\ShopifyAPIIntegration\ConsoleApp1\obj\Debug\ShopifyOr
 C:\VerserSourceCodeGitRepo\ShopifyAPIIntegration\ConsoleApp1\bin\Debug\NLog.config
 C:\VerserSourceCodeGitRepo\ShopifyAPIIntegration\ConsoleApp1\bin\Debug\NLog.dll
 C:\VerserSourceCodeGitRepo\ShopifyAPIIntegration\ConsoleApp1\bin\Debug\NLog.xml
-C:\VerserSourceCodeGitRepo\ShopifyAPIIntegration\ConsoleApp1\obj\Debug\ShopifyOrdersEngine.csprojAssemblyReference.cache

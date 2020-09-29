@@ -7,8 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp1.ServiceHelpers
 {
@@ -19,7 +17,7 @@ namespace ConsoleApp1.ServiceHelpers
             List<OrderViewModel> ordermodel = new List<OrderViewModel>();
             string response = string.Empty;
             string CreateOrderURi = System.Configuration.ConfigurationManager.AppSettings["rooturi"] + System.Configuration.ConfigurationManager.AppSettings["CreateOrder"];
-            string token = TokenInitiator.GetTokenDetails(); //System.Web.HttpContext.Current.Session["BearerToken"].ToString();
+            string token = TokenInitiator.GetTokenDetails(); 
             try
             {
                 using (var client = new HttpClient())

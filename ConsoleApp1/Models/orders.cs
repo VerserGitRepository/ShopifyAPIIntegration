@@ -712,4 +712,8 @@ namespace ConsoleApp1.Models
         public string amount { get; set; }
         public string currency_code { get; set; }
     }
+    public class Rootobject
+    {
+        public Fulfillment fulfillment { get; set; }
+    }
 }

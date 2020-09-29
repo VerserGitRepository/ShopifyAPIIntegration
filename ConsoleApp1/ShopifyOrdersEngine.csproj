@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LogService\LogManager.cs" />
+    <Compile Include="Models\FullFillmentModel\FulfillOrder.cs" />
     <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\orders.cs" />
     <Compile Include="Program.cs" />
