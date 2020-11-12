@@ -52,6 +52,8 @@ namespace ConsoleApp1.ServiceHelpers
             var popupObj = JsonConvert.DeserializeObject(responseFromServer);
             dynamic DynamicData = JsonConvert.DeserializeObject(responseFromServer);
             var modelCollection = new List<OrderViewModel>();
+            var fulFillmentItem = new Fulfillment();
+
             foreach (dynamic order in DynamicData["orders"])
             {
                 string s = order["id"];
@@ -75,11 +77,17 @@ namespace ConsoleApp1.ServiceHelpers
                 theModel.OrderSource = "ShopifyPortal";
                 theModel.Surname = add["first_name"];
                 modelCollection.Add(theModel);
+
+                
             }
+            fulFillmentItem.line_items = new Line_Items1[modelCollection.Count];
+            int lineItemcount = 0;
             foreach (OrderViewModel theModel in modelCollection)
             {
-               // var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
-              //  LoggerManager.Writelog("info", $"response:{ReturnResponse}");
+                fulFillmentItem.line_items[lineItemcount] = new Line_Items1 {  id=theModel.ID, product_id = theModel.ID};
+                //var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
+                lineItemcount++;
+                //LoggerManager.Writelog("info", $"response:{ReturnResponse}");
             }
             reader.Close();
             dataStream.Close();
