@@ -17,9 +17,11 @@ namespace ConsoleApp1.ServiceHelpers
         public static void FetchAndPushShopifyOrders()
         {
 
-            WebRequest request = WebRequest.Create("https://verser-online-store.myshopify.com/admin/api/2020-07/orders.json?status=any");
+            //  WebRequest request = WebRequest.Create("https://verser-online-store.myshopify.com/admin/api/2020-07/orders.json?status=any");
             // Set the credentials.
-            request.Credentials = new NetworkCredential("f2f0ba5cff55bdcddba3a63e33602b74", "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");
+            //request.Credentials = new NetworkCredential("f2f0ba5cff55bdcddba3a63e33602b74", "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");
+            WebRequest request = WebRequest.Create("https://9ca3419a9b10bed6c7fb8a0cdba7bd8e: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@numobile.myshopify.com/admin/api/2020-10/orders.json");
+            request.Credentials = new NetworkCredential("9ca3419a9b10bed6c7fb8a0cdba7bd8e", "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");
             // Get the response.
             HttpWebResponse response = null;
             try
@@ -61,10 +63,14 @@ namespace ConsoleApp1.ServiceHelpers
                 theModel.FirstName = add["first_name"];
                 theModel.AddressLine1 = add["address1"];
                 theModel.Locality = add["city"];
-                theModel.SKU = "S9PL64PL";//order_lineItems[0]["sku"];
+                theModel.SKU = order_lineItems[0]["sku"];
                 theModel.State = add["province_code"];
                 theModel.Postcode = add["zip"];
-                theModel.ContactNumber = 0466877007;//add["phone"];
+                string ContactNo = add["phone"];
+                if (!string.IsNullOrEmpty(ContactNo))
+                {
+                    theModel.ContactNumber = Convert.ToInt32(ContactNo.Replace(" ", string.Empty).Replace("+61",string.Empty).Trim());
+                }                
                 theModel.OrderType = "PhoneOnly";
                 theModel.OrderSource = "ShopifyPortal";
                 theModel.Surname = add["first_name"];
@@ -72,8 +78,8 @@ namespace ConsoleApp1.ServiceHelpers
             }
             foreach (OrderViewModel theModel in modelCollection)
             {
-                var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
-                LoggerManager.Writelog("info", $"response:{ReturnResponse}");
+               // var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
+              //  LoggerManager.Writelog("info", $"response:{ReturnResponse}");
             }
             reader.Close();
             dataStream.Close();

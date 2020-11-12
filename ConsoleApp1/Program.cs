@@ -16,8 +16,8 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            // LoggerManager.Writelog("info", "Orders Pull Request Initiated");
-            //ShopifyAPIServices.FetchAndPushShopifyOrders();
+            LoggerManager.Writelog("info", "Orders Pull Request Initiated");
+            ShopifyAPIServices.FetchAndPushShopifyOrders();
             var fulfill = new FulfillOrder();
             fulfill.FulfillOrderLineItem();
             Console.ReadKey();
