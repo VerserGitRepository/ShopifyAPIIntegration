@@ -26,5 +26,6 @@ namespace ConsoleApp1.Models
         public Nullable<DateTime> OrderDate { get; set; }
         public string OrderStatus { get; set; }
         public string OrderSource { get; set; }
+        public string Shopify_OrderNumber { get; set; }
     }
 }
