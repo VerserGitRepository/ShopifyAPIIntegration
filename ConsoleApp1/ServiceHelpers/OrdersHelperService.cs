@@ -52,9 +52,47 @@ namespace ConsoleApp1.ServiceHelpers
             }
             catch (Exception ex)
             {
-                response = ex.Message;
+                LoggerManager.Writelog("error", ex.Message);
             }
             return response;
+        }
+
+        public static List<OrderViewModel> OpenShopifyOrders()
+        {
+           var ordermodel = new List<OrderViewModel>();
+            string response = string.Empty;
+            string CreateOrderURi = System.Configuration.ConfigurationManager.AppSettings["rooturi"] + System.Configuration.ConfigurationManager.AppSettings["OpenShopifyOrders"];
+            string token = TokenInitiator.GetTokenDetails();
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var resp = client.GetAsync(CreateOrderURi);
+                    resp.Wait(TimeSpan.FromSeconds(10));
+                    if (resp.IsCompleted)
+                    {
+                        if (resp.Result.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            Console.WriteLine("Authorization failed. Token expired or invalid.");
+                        }
+                        if (resp.Result.StatusCode == HttpStatusCode.OK)
+                        {
+                            response = resp.Result.Content.ReadAsStringAsync().Result;
+                            ordermodel = JsonConvert.DeserializeObject<List<OrderViewModel>>(response);
+                        }
+                        else
+                        {
+                              LoggerManager.Writelog("error", $"Error Occured while petching Orders Information.");                          
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggerManager.Writelog("error", ex.Message);
+            }
+            return ordermodel;
         }
     }
 }
