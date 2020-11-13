@@ -18,8 +18,8 @@ namespace ConsoleApp1
         {
             LoggerManager.Writelog("info", "Orders Pull Request Initiated");
             ShopifyAPIServices.FetchAndPushShopifyOrders();
-            var fulfill = new FulfillOrder();
-            fulfill.FulfillOrderLineItem();
+            //var fulfill = new FulfillOrder();
+            //fulfill.FulfillOrderLineItem();
             Console.ReadKey();
         }
     }

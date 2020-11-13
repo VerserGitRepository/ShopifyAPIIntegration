@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ShopifyOrdersEngine.LogService;
+using ShopifyOrdersEngine.Models.FullFillmentModel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -46,13 +47,17 @@ namespace ConsoleApp1.ServiceHelpers
             var result = JObject.Parse(responseFromServer);   //parses entire stream into JObject, from which you can use to query the bits you need.
             var items = result.Children().ToList();   //Get the sections you need and save as enumerable (will be in the form of JTokens)
 
+            JArray array = new JArray();
+            JObject joResponse = JObject.Parse(responseFromServer);
+            array = (JArray)joResponse["orders"];
+
             List<orders> infoList = new List<orders>();  //init new list to store the objects.
             var parsedObject = JObject.Parse(responseFromServer);
             var popupJson = parsedObject["orders"].ToString();
             var popupObj = JsonConvert.DeserializeObject(responseFromServer);
             dynamic DynamicData = JsonConvert.DeserializeObject(responseFromServer);
             var modelCollection = new List<OrderViewModel>();
-            var fulFillmentItem = new Fulfillment();
+            //var fulFillmentItem = new Fulfillment();
 
             foreach (dynamic order in DynamicData["orders"])
             {
@@ -76,19 +81,25 @@ namespace ConsoleApp1.ServiceHelpers
                 theModel.OrderType = "PhoneOnly";
                 theModel.OrderSource = "ShopifyPortal";
                 theModel.Surname = add["first_name"];
+                theModel.OrderNumber = order["order_number"];
                 modelCollection.Add(theModel);
 
                 
             }
-            fulFillmentItem.line_items = new Line_Items1[modelCollection.Count];
+            //fulFillmentItem.line_items = new Line_Items1[modelCollection.Count];
             int lineItemcount = 0;
             foreach (OrderViewModel theModel in modelCollection)
             {
-                fulFillmentItem.line_items[lineItemcount] = new Line_Items1 {  id=theModel.ID, product_id = theModel.ID};
-                //var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
+
+               // fulFillmentItem.line_items[lineItemcount] = new Line_Items1 { id = theModel.ID, product_id = theModel.ID };
+               // var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
                 lineItemcount++;
                 //LoggerManager.Writelog("info", $"response:{ReturnResponse}");
             }
+            ShopifyOrdersEngine.Models.FullFillmentModel.Fulfillment item = FulfillOrder.FulfillOrderLineItem();
+            OrdersHelperService.CreateFulfillment(item);
+
+           // var obj = 
             reader.Close();
             dataStream.Close();
             response.Close();

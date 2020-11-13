@@ -26,7 +26,7 @@ namespace ShopifyOrdersEngine.Models.FullFillmentModel
 
     public class FulfillOrder
     {
-        public void FulfillOrderLineItem()
+        public static Fulfillment FulfillOrderLineItem()
         {
             //POST /admin/api/2020-07/orders/450789469/fulfillments.json  //URL //https://shopify.dev/docs/admin-api/rest/reference/shipping-and-fulfillment/fulfillment#create-2020-07
             string ConsignmentID = "C7SZ50005296";
@@ -38,6 +38,7 @@ namespace ShopifyOrdersEngine.Models.FullFillmentModel
             root.fulfillment.tracking_urls = new List<string>() { $"https://startrack.com.au/track/search/{ConsignmentID}" }.ToArray();
             var json = JsonConvert.SerializeObject(root);
             Console.WriteLine(json);
+            return root.fulfillment;
         }
     }
 }
