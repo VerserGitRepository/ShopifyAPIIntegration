@@ -57,9 +57,10 @@ namespace ConsoleApp1.ServiceHelpers
             return response;
         }
 
+
         public static List<OrderViewModel> OpenShopifyOrders()
         {
-           var ordermodel = new List<OrderViewModel>();
+            var ordermodel = new List<OrderViewModel>();
             string response = string.Empty;
             string CreateOrderURi = System.Configuration.ConfigurationManager.AppSettings["rooturi"] + System.Configuration.ConfigurationManager.AppSettings["OpenShopifyOrders"];
             string token = TokenInitiator.GetTokenDetails();
@@ -83,7 +84,7 @@ namespace ConsoleApp1.ServiceHelpers
                         }
                         else
                         {
-                              LoggerManager.Writelog("error", $"Error Occured while petching Orders Information.");                          
+                            LoggerManager.Writelog("error", $"Error Occured while petching Orders Information.");
                         }
                     }
                 }
@@ -93,6 +94,31 @@ namespace ConsoleApp1.ServiceHelpers
                 LoggerManager.Writelog("error", ex.Message);
             }
             return ordermodel;
+        }
+
+        public static string CreateFulfillment(ShopifyOrdersEngine.Models.FullFillmentModel.Fulfillment fulfilmentItem)
+        {
+           // ReturnModel ReturnResult = new ReturnModel();
+            string uriAdd = "https://9ca3419a9b10bed6c7fb8a0cdba7bd8e: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@numobile.myshopify.com/admin/api/2020-10/orders/2859903582317/fulfillments.json";
+            var credentials = new NetworkCredential("9ca3419a9b10bed6c7fb8a0cdba7bd8e", "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");
+            using (var handler = new HttpClientHandler {Credentials= credentials })
+            {
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    client.BaseAddress = new Uri(uriAdd);
+                    HttpResponseMessage response = client.PostAsJsonAsync(uriAdd, fulfilmentItem).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var ReturnResult = response.Content.ReadAsAsync<Fulfillment>();
+                        // HttpContext.Current.Session["ResultMessage"] = ReturnResult.Message;
+                    }
+                    else
+                    {
+                        // HttpContext.Current.Session["ErrorMessage"] = ReturnResult.Message;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

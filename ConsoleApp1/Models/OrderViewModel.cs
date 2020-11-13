@@ -13,6 +13,7 @@ namespace ConsoleApp1.Models
         public string TIABOrderID { get; set; }
         public string FirstName { get; set; }
         public string Surname { get; set; }
+        public string OrderNumber { get; set; }
         public string Salutation { get; set; }
         public string State { get; set; }
         public string AddressLine1 { get; set; }
