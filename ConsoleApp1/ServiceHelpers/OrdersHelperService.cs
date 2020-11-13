@@ -62,7 +62,7 @@ namespace ConsoleApp1.ServiceHelpers
         {
             var ordermodel = new List<OrderViewModel>();
             string response = string.Empty;
-            string CreateOrderURi = System.Configuration.ConfigurationManager.AppSettings["rooturi"] + System.Configuration.ConfigurationManager.AppSettings["OpenShopifyOrders"];
+            string CreateOrderURi = System.Configuration.ConfigurationManager.AppSettings["rooturi"] + System.Configuration.ConfigurationManager.AppSettings["OnOrderList"];
             string token = TokenInitiator.GetTokenDetails();
             try
             {

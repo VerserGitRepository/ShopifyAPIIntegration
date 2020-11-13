@@ -90,16 +90,16 @@ namespace ConsoleApp1.ServiceHelpers
             {
                 if (_ListOfOpenOrders.Count>0)
                 {               
-                    if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber).FirstOrDefault() == null)
+                    if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber && o.OrderSource.Contains("ShopifyPortal")).FirstOrDefault() == null )
                     {
-                            // var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
-                            //  LoggerManager.Writelog("info", $"response:{ReturnResponse}");
+                      var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
+                      LoggerManager.Writelog("info", $"response:{ReturnResponse}");
                      }
                 }
                 else
                 {
-                    // var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
-                    //  LoggerManager.Writelog("info", $"response:{ReturnResponse}");
+                    var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
+                    LoggerManager.Writelog("info", $"response:{ReturnResponse}");
                 }
                 reader.Close();
                 dataStream.Close();
