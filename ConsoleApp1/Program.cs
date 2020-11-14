@@ -12,15 +12,20 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    class Program
+   public class Program
     {
         static void Main(string[] args)
         {
             LoggerManager.Writelog("info", "Orders Pull Request Initiated");
-            ShopifyAPIServices.FetchAndPushShopifyOrders();
+             ShopifyAPIServices.FetchAndPushShopifyOrders();
+            LoggerManager.Writelog("info", "Orders Pull Request Completed");
+
+            //fulFillmentItem.line_items = new Line_Items1[modelCollection.Count];
+            //ShopifyOrdersEngine.Models.FullFillmentModel.Fulfillment item = FulfillOrder.FulfillOrderLineItem();
+            //OrdersHelperService.CreateFulfillment(item);
             //var fulfill = new FulfillOrder();
             //fulfill.FulfillOrderLineItem();
-            Console.ReadKey();
+            //  Console.ReadKey();
         }
     }
 }

@@ -17,7 +17,6 @@ namespace ConsoleApp1.ServiceHelpers
         private static readonly string TimeSheetAPIURl = ConfigurationManager.AppSettings["TimeSheetBaseURL"] + ConfigurationManager.AppSettings["TimeSheetRootDirectory"];
         public static void FetchAndPushShopifyOrders()
         {
-
             //  WebRequest request = WebRequest.Create("https://verser-online-store.myshopify.com/admin/api/2020-07/orders.json?status=any");
             // Set the credentials.
             //request.Credentials = new NetworkCredential("f2f0ba5cff55bdcddba3a63e33602b74", "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");
@@ -28,7 +27,7 @@ namespace ConsoleApp1.ServiceHelpers
             try
             {
                 response = (HttpWebResponse)request.GetResponse();
-                LoggerManager.Writelog("info", $"response:{response}");
+               // LoggerManager.Writelog("info", $"response:{response}");
             }
             catch (Exception ea)
             {
@@ -52,17 +51,22 @@ namespace ConsoleApp1.ServiceHelpers
             var popupObj = JsonConvert.DeserializeObject(responseFromServer);
             dynamic DynamicData = JsonConvert.DeserializeObject(responseFromServer);
             var modelCollection = new List<OrderViewModel>();
-            var _ListOfOpenOrders = OrdersHelperService.OpenShopifyOrders();
+            string token = TokenInitiator.GetTokenDetails();
+            if (token ==null)
+            {
+                return;
+            }
+            var _ListOfOpenOrders = OrdersHelperService.OpenShopifyOrders(token);
 
             foreach (dynamic order in DynamicData["orders"])
             {
+                var theModel = new OrderViewModel();                
                 string s = order["id"];
-                var add = order["shipping_address"];
-                var order_lineItems = order["line_items"];
-                OrderViewModel theModel = new OrderViewModel();
                 theModel.TIABOrderID = s;
-                theModel.Surname = add["last_name"];
+                var add = order["shipping_address"];
+                var order_lineItems = order["line_items"];  
                 theModel.FirstName = add["first_name"];
+                theModel.Surname = add["last_name"];
                 theModel.AddressLine1 = add["address1"];
                 theModel.Locality = add["city"];
                 theModel.SKU = order_lineItems[0]["sku"];
@@ -75,36 +79,30 @@ namespace ConsoleApp1.ServiceHelpers
                     theModel.ContactNumber = Convert.ToInt32(ContactNo.Replace(" ", string.Empty).Replace("+61", string.Empty).Trim());
                 }
                 theModel.OrderType = "PhoneOnly";
-                theModel.OrderSource = "ShopifyPortal";
-                theModel.Surname = add["first_name"];
+                theModel.OrderSource = "ShopifyPortal";              
                 theModel.OrderNumber = order["order_number"];
                 modelCollection.Add(theModel);
-
-
             }
-            //fulFillmentItem.line_items = new Line_Items1[modelCollection.Count];
-            //ShopifyOrdersEngine.Models.FullFillmentModel.Fulfillment item = FulfillOrder.FulfillOrderLineItem();
-            //OrdersHelperService.CreateFulfillment(item);
-
             foreach (OrderViewModel theModel in modelCollection)
             {
                 if (_ListOfOpenOrders.Count>0)
                 {               
                     if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber && o.OrderSource.Contains("ShopifyPortal")).FirstOrDefault() == null )
                     {
-                      var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
-                      LoggerManager.Writelog("info", $"response:{ReturnResponse}");
+                        LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
+                         OrdersHelperService.CreateOrder(theModel,token);                     
                      }
                 }
                 else
                 {
-                    var ReturnResponse = OrdersHelperService.CreateOrder(theModel);
-                    LoggerManager.Writelog("info", $"response:{ReturnResponse}");
+                    LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
+                    OrdersHelperService.CreateOrder(theModel,token);                  
                 }
                 reader.Close();
                 dataStream.Close();
                 response.Close();
             }
+
         }
     }
 }
