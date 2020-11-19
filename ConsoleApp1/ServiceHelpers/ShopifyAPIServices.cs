@@ -98,11 +98,12 @@ namespace ConsoleApp1.ServiceHelpers
                     {
                         if (item["quantity"] >= 1)
                         {
+                           
                             int quantity = item["quantity"];
                             for (int i = 1; i <= quantity; i++)
                             {
                                 
-                              modelCollection.Add(FillModel(order));
+                              modelCollection.Add(FillModel(order, item["quantity"] > 1));
                             }
                         }
                     }
@@ -135,7 +136,7 @@ namespace ConsoleApp1.ServiceHelpers
                 }
             }
 
-        private static OrderViewModel FillModel(dynamic order)
+        private static OrderViewModel FillModel(dynamic order, bool isMultiple)
         {
             var theModel = new OrderViewModel();
             string s = order["id"];
@@ -150,6 +151,7 @@ namespace ConsoleApp1.ServiceHelpers
             theModel.State = add["province_code"];
             theModel.Postcode = add["zip"];
             theModel.Shopify_OrderNumber = order["order_number"];
+            theModel.IsShopifyDualOrder = isMultiple;
             //_Shopify_OrderNumber = order["order_number"];
             string ContactNo = add["phone"];
            // strOrder_quantity = order_lineItems["quantity"];
