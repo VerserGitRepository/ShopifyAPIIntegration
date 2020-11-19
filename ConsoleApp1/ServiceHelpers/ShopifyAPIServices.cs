@@ -41,7 +41,7 @@ namespace ConsoleApp1.ServiceHelpers
             var result = JObject.Parse(responseFromServer);   //parses entire stream into JObject, from which you can use to query the bits you need.
 
             var items = result.Children().ToList();   //Get the sections you need and save as enumerable (will be in the form of JTokens)
-            int Order_quantity = 1;
+            //int Order_quantity = 1;
             string strOrder_quantity = string.Empty;
             string _Shopify_OrderNumber = string.Empty;
             JArray array = new JArray();
@@ -101,45 +101,39 @@ namespace ConsoleApp1.ServiceHelpers
                             int quantity = item["quantity"];
                             for (int i = 1; i <= quantity; i++)
                             {
-                                modelCollection.Add(FillModel(order));
+                                
+                              modelCollection.Add(FillModel(order));
                             }
                         }
                     }
                 }
-              
-                //modelCollection.Add(FillModel(order));
-            }
-
-            if (_Shopify_OrderNumber == "1600")
-            {
+            }          
                 foreach (OrderViewModel theModel in modelCollection)
                 {
                     if (_ListOfOpenOrders.Count > 0)
                     {
                         if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber && o.OrderSource.Contains("ShopifyPortal")).FirstOrDefault() == null)
                         {
-                            //for (int i = 1; i < Order_quantity; i++)
-                            //{
-                                LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
-                                OrdersHelperService.CreateOrder(theModel, token);
-                            //}
+                        if (theModel.Shopify_OrderNumber == "1600")
+                        {
+                            LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");                           
+                        OrdersHelperService.CreateOrder(theModel, token);
                         }
+                    }
                     }
                     else
                     {
-                        //for (int i = 0; i < Order_quantity; i++)
-                        //{
-                            LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
-                            OrdersHelperService.CreateOrder(theModel, token);
-                        //}
+                    if (theModel.Shopify_OrderNumber == "1600")
+                    {
+                        LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
+                        OrdersHelperService.CreateOrder(theModel, token);
+                    }                       
                     }
                     reader.Close();
                     dataStream.Close();
                     response.Close();
                 }
             }
-           
-        }
 
         private static OrderViewModel FillModel(dynamic order)
         {
