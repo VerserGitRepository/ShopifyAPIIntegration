@@ -27,7 +27,7 @@ namespace ConsoleApp1.ServiceHelpers
             try
             {
                 response = (HttpWebResponse)request.GetResponse();
-                // LoggerManager.Writelog("info", $"response:{response}");
+               // LoggerManager.Writelog("info", $"response:{response}");
             }
             catch (Exception ea)
             {
@@ -41,7 +41,7 @@ namespace ConsoleApp1.ServiceHelpers
             var result = JObject.Parse(responseFromServer);   //parses entire stream into JObject, from which you can use to query the bits you need.
 
             var items = result.Children().ToList();   //Get the sections you need and save as enumerable (will be in the form of JTokens)
-            int Order_quantity = 1;
+            //int Order_quantity = 1;
             string strOrder_quantity = string.Empty;
             string _Shopify_OrderNumber = string.Empty;
             JArray array = new JArray();
@@ -54,75 +54,96 @@ namespace ConsoleApp1.ServiceHelpers
             dynamic DynamicData = JsonConvert.DeserializeObject(responseFromServer);
             var modelCollection = new List<OrderViewModel>();
             string token = TokenInitiator.GetTokenDetails();
-            if (token == null)
+            if (token ==null)
             {
                 return;
             }
-            var _ListOfOpenOrders = OrdersHelperService.OpenShopifyOrders(token);
+         var _ListOfOpenOrders = OrdersHelperService.OpenShopifyOrders(token);
 
             foreach (dynamic order in DynamicData["orders"])
             {
-                var theModel = new OrderViewModel();
-                string s = order["id"];
-                theModel.TIABOrderID = s;
-                var add = order["shipping_address"];
-                var order_lineItems = order["line_items"];
-                theModel.FirstName = add["first_name"];
-                theModel.Surname = add["last_name"];
-                theModel.AddressLine1 = add["address1"];
-                theModel.Locality = add["city"];
-                theModel.SKU = order_lineItems[0]["sku"];
-                theModel.State = add["province_code"];
-                theModel.Postcode = add["zip"];
-                theModel.Shopify_OrderNumber = order["order_number"];
-                _Shopify_OrderNumber = order["order_number"];
-                string ContactNo = add["phone"];
-                strOrder_quantity = order_lineItems[0]["quantity"];
-                if (!string.IsNullOrEmpty(strOrder_quantity))
+                LoggerManager.Writelog("info", "Looping through orders."+ order);
+                if (order["line_items"].Count > 0)
                 {
-                    if (Convert.ToInt32(strOrder_quantity) > 1)
+                    LoggerManager.Writelog("info", "order[line_item].Count." + order["line_items"].Count);
+                    LoggerManager.Writelog("info", "order LineItems");
+                    foreach (var item in order["line_items"])
                     {
-                        Order_quantity = Convert.ToInt32(strOrder_quantity);
+                        LoggerManager.Writelog("info", "LineItems" + item);
+                        if (item["quantity"] >= 1)
+                        {
+                           
+                            int quantity = item["quantity"];
+                            LoggerManager.Writelog("info", "LineItemsQuantity" + quantity);
+                            for (int i = 1; i <= quantity; i++)
+                            {
+                              modelCollection.Add(FillModel(order, item["quantity"] > 1));
+                            }
+                        }
                     }
                 }
-                if (!string.IsNullOrEmpty(ContactNo))
-                {
-                    theModel.ContactNumber = Convert.ToInt32(ContactNo.Replace(" ", string.Empty).Replace("+61", string.Empty).Trim());
-                }
-                theModel.OrderType = "PhoneOnly";
-                theModel.OrderSource = "ShopifyPortal";
-                theModel.OrderNumber = order["order_number"];
-                modelCollection.Add(theModel);
-            }
-
-            if (_Shopify_OrderNumber == "1600")
-            {
+            }          
                 foreach (OrderViewModel theModel in modelCollection)
                 {
                     if (_ListOfOpenOrders.Count > 0)
                     {
                         if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber && o.OrderSource.Contains("ShopifyPortal")).FirstOrDefault() == null)
                         {
-                            //for (int i = 1; i < Order_quantity; i++)
-                            //{
-                            LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
+                        if (theModel.Shopify_OrderNumber == "1600")
+                        {
+                            LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");                           
                             OrdersHelperService.CreateOrder(theModel, token);
-                            //}
                         }
+                    }
                     }
                     else
                     {
-                        //for (int i = 0; i < Order_quantity; i++)
-                        //{
+                    if (theModel.Shopify_OrderNumber == "1600")
+                    {
                         LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
                         OrdersHelperService.CreateOrder(theModel, token);
-                        //}
+                    }                       
                     }
                     reader.Close();
                     dataStream.Close();
                     response.Close();
                 }
             }
+
+        private static OrderViewModel FillModel(dynamic order, bool isMultiple)
+        {
+            var theModel = new OrderViewModel();
+            string s = order["id"];
+            theModel.TIABOrderID = s;
+            var add = order["shipping_address"];
+            var order_lineItems = order["line_items"][0];
+            theModel.FirstName = add["first_name"];
+            theModel.Surname = add["last_name"];
+            theModel.AddressLine1 = add["address1"];
+            theModel.Locality = add["city"];
+            theModel.SKU = order_lineItems["sku"];
+            theModel.State = add["province_code"];
+            theModel.Postcode = add["zip"];
+            theModel.Shopify_OrderNumber = order["order_number"];
+            theModel.IsShopifyDualOrder = isMultiple;
+            //_Shopify_OrderNumber = order["order_number"];
+            string ContactNo = add["phone"];
+           // strOrder_quantity = order_lineItems["quantity"];
+            //if (!string.IsNullOrEmpty(strOrder_quantity))
+            //{
+            //    if (Convert.ToInt32(strOrder_quantity) > 1)
+            //    {
+            //        Order_quantity = Convert.ToInt32(strOrder_quantity);
+            //    }
+            //}
+            if (!string.IsNullOrEmpty(ContactNo))
+            {
+                theModel.ContactNumber = Convert.ToInt32(ContactNo.Replace(" ", string.Empty).Replace("+61", string.Empty).Trim());
+            }
+            theModel.OrderType = "PhoneOnly";
+            theModel.OrderSource = "ShopifyPortal";
+            theModel.OrderNumber = order["order_number"];
+            return theModel;
 
         }
     }
