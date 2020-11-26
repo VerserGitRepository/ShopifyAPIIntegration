@@ -29,5 +29,6 @@ namespace ConsoleApp1.Models
         public string OrderSource { get; set; }
         public string Shopify_OrderNumber { get; set; }
         public bool? IsShopifyDualOrder { get; set; }
+        public bool? AddressValidation { get; set; }
     }
 }
