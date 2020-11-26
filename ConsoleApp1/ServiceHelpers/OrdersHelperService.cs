@@ -36,10 +36,12 @@ namespace ConsoleApp1.ServiceHelpers
                             if (ResponseData.First().VerserOrderID != null)
                             {
                                 LoggerManager.Writelog("info", $"{ResponseData.First().VerserOrderID} Shopify - Verser Order is been Created");
+                              Console.WriteLine("info", $"{ResponseData.First().VerserOrderID} Shopify - Verser Order is been Created");
                             }
                             else
                             {
                                 LoggerManager.Writelog("error", $"Error Occured Please Verify Your Order Request Information. : {ResponseData.FirstOrDefault().ErrorMessage}");
+                              Console.WriteLine("error", $"Error Occured Please Verify Your Order Request Information. : {ResponseData.FirstOrDefault().ErrorMessage}");
                             }
                         }
                     }
