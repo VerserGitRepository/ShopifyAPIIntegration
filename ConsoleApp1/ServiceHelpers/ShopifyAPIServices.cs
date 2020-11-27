@@ -15,6 +15,8 @@ namespace ConsoleApp1.ServiceHelpers
     public class ShopifyAPIServices
     {
         private static readonly string TimeSheetAPIURl = ConfigurationManager.AppSettings["TimeSheetBaseURL"] + ConfigurationManager.AppSettings["TimeSheetRootDirectory"];
+
+   
         public static void FetchAndPushShopifyOrders()
         {
             //  WebRequest request = WebRequest.Create("https://verser-online-store.myshopify.com/admin/api/2020-07/orders.json?status=any");
@@ -61,20 +63,14 @@ namespace ConsoleApp1.ServiceHelpers
          var _ListOfOpenOrders = OrdersHelperService.OpenShopifyOrders(token);
 
             foreach (dynamic order in DynamicData["orders"])
-            {
-                LoggerManager.Writelog("info", "Looping through orders."+ order);
+            {             
                 if (order["line_items"].Count > 0)
                 {
-                    LoggerManager.Writelog("info", "order[line_item].Count." + order["line_items"].Count);
-                    LoggerManager.Writelog("info", "order LineItems");
-                    foreach (var item in order["line_items"])
+                   foreach (var item in order["line_items"])
                     {
-                        LoggerManager.Writelog("info", "LineItems" + item);
                         if (item["quantity"] >= 1)
                         {
-                           
-                            int quantity = item["quantity"];
-                            LoggerManager.Writelog("info", "LineItemsQuantity" + quantity);
+                           int quantity = item["quantity"];                          
                             for (int i = 1; i <= quantity; i++)
                             {
                               modelCollection.Add(FillModel(order, item["quantity"] > 1));
@@ -89,26 +85,21 @@ namespace ConsoleApp1.ServiceHelpers
                     {
                         if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber && o.OrderSource.Contains("ShopifyPortal")).FirstOrDefault() == null)
                         {
-                        if (theModel.Shopify_OrderNumber == "1600")
-                        {
-                            LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");                           
-                            OrdersHelperService.CreateOrder(theModel, token);
-                        }
+                            LodgeLogs(theModel);                                                   
+                            OrdersHelperService.CreateOrder(theModel, token);                     
                     }
                     }
                     else
-                    {
-                    if (theModel.Shopify_OrderNumber == "1600")
-                    {
+                    {                  
                         LoggerManager.Writelog("info", $"Request: Shopify Order Sent {theModel.Shopify_OrderNumber}");
-                        OrdersHelperService.CreateOrder(theModel, token);
-                    }                       
+                        OrdersHelperService.CreateOrder(theModel, token);                                         
                     }
                     reader.Close();
                     dataStream.Close();
                     response.Close();
                 }
             }
+
 
         private static OrderViewModel FillModel(dynamic order, bool isMultiple)
         {
@@ -122,20 +113,12 @@ namespace ConsoleApp1.ServiceHelpers
             theModel.AddressLine1 = add["address1"];
             theModel.Locality = add["city"];
             theModel.SKU = order_lineItems["sku"];
+            theModel.OrderQuantity = order_lineItems["quantity"];
             theModel.State = add["province_code"];
             theModel.Postcode = add["zip"];
             theModel.Shopify_OrderNumber = order["order_number"];
-            theModel.IsShopifyDualOrder = isMultiple;
-            //_Shopify_OrderNumber = order["order_number"];
-            string ContactNo = add["phone"];
-           // strOrder_quantity = order_lineItems["quantity"];
-            //if (!string.IsNullOrEmpty(strOrder_quantity))
-            //{
-            //    if (Convert.ToInt32(strOrder_quantity) > 1)
-            //    {
-            //        Order_quantity = Convert.ToInt32(strOrder_quantity);
-            //    }
-            //}
+            theModel.IsShopifyDualOrder = isMultiple;          
+            string ContactNo = add["phone"];       
             if (!string.IsNullOrEmpty(ContactNo))
             {
                 theModel.ContactNumber = Convert.ToInt32(ContactNo.Replace(" ", string.Empty).Replace("+61", string.Empty).Trim());
@@ -144,7 +127,24 @@ namespace ConsoleApp1.ServiceHelpers
             theModel.OrderSource = "ShopifyPortal";
             theModel.OrderNumber = order["order_number"];
             return theModel;
+        }
 
+        public static void LodgeLogs(OrderViewModel LogModel)
+        {
+            if (LogModel !=null)
+            {
+                LoggerManager.Writelog("info", "############ New Order Request #############");
+                LoggerManager.Writelog("info", $"Shopify Order No: { LogModel.Shopify_OrderNumber}");
+                LoggerManager.Writelog("info", $"Shopify DualOrder: { LogModel.IsShopifyDualOrder}");
+                LoggerManager.Writelog("info", $"Shopify FirstName: { LogModel.FirstName}");
+                LoggerManager.Writelog("info", $"Shopify Surname: { LogModel.Surname}");
+                LoggerManager.Writelog("info", $"Shopify AddressLine1: { LogModel.AddressLine1}");
+                LoggerManager.Writelog("info", $"Shopify Suburb: {  LogModel.Locality}");
+                LoggerManager.Writelog("info", $"Shopify State: {  LogModel.State}");
+                LoggerManager.Writelog("info", $"Shopify Postcode: {  LogModel.Postcode}");
+                LoggerManager.Writelog("info", $"Shopify SKU: { LogModel.SKU}");
+                LoggerManager.Writelog("info", $"Shopify Quantity: { LogModel.OrderQuantity}");
+            }           
         }
     }
 }
