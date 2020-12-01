@@ -110,7 +110,7 @@ namespace ConsoleApp1.ServiceHelpers
             var order_lineItems = order["line_items"][0];
             theModel.FirstName = add["first_name"];
             theModel.Surname = add["last_name"];
-            theModel.AddressLine1 = add["address1"];
+            theModel.AddressLine1 = add["address1"]+" "+ add["address2"];
             theModel.Locality = add["city"];
             theModel.SKU = order_lineItems["sku"];
             theModel.OrderQuantity = order_lineItems["quantity"];
