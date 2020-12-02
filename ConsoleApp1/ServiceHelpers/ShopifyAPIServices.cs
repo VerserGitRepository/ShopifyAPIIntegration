@@ -86,7 +86,7 @@ namespace ConsoleApp1.ServiceHelpers
                         if (_ListOfOpenOrders.Where(o => o.TIABOrderID == theModel.TIABOrderID && o.Shopify_OrderNumber == theModel.Shopify_OrderNumber && o.OrderSource.Contains("ShopifyPortal")).FirstOrDefault() == null)
                         {
                             LodgeLogs(theModel);                                                   
-                            OrdersHelperService.CreateOrder(theModel, token);                     
+                            //OrdersHelperService.CreateOrder(theModel, token);                     
                     }
                     }
                     else
@@ -121,7 +121,7 @@ namespace ConsoleApp1.ServiceHelpers
             string ContactNo = add["phone"];       
             if (!string.IsNullOrEmpty(ContactNo))
             {
-                theModel.ContactNumber = Convert.ToInt32(ContactNo.Replace(" ", string.Empty).Replace("+61", string.Empty).Trim());
+                theModel.ContactNumber = Convert.ToUInt64(ContactNo.Replace(" ", string.Empty).Replace("+61", string.Empty).Trim());
             }
             theModel.OrderType = "PhoneOnly";
             theModel.OrderSource = "ShopifyPortal";
